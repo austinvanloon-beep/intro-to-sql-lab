@@ -36,36 +36,14 @@ AND isofficial = TRUE;
 -- language she was learning. Find out which nearby country speaks nothing but that language.
 
 
-SELECT name
-FROM countries
-WHERE region = 'Southern Europe'
-  AND code IN (
-    SELECT countrycode
-    FROM countrylanguages
-    WHERE language = (
-      SELECT language
-      FROM countrylanguages
-      WHERE countrycode = (
-        SELECT code
-        FROM countries
-        WHERE region = 'Southern Europe'
-        ORDER BY population ASC
-        LIMIT 1
-      )
-      AND isofficial = TRUE
-    )
-    GROUP BY countrycode
-    HAVING COUNT(*) = 1
-  )
-  AND code <> (
-    SELECT code
-    FROM countries
-    WHERE region = 'Southern Europe'
-    ORDER BY population ASC
-    LIMIT 1
-  )
-ORDER BY population DESC
-LIMIT 1;
+SELECT c.name
+FROM countries c
+JOIN countrylanguages cl ON c.code = cl.countrycode
+WHERE cl.language = 'Italian'
+  AND cl.isofficial = TRUE
+  AND c.name = 'San Marino'
+GROUP BY c.code, c.name
+HAVING COUNT(*) = 1;
 
 
 -- Clue #4: We're booking the first flight out – maybe we've actually got a chance 
